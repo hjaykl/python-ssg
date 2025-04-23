@@ -10,7 +10,7 @@ def extract_title(markdown: str) -> str:
     raise ValueError("markdown content must contain a title")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, base_path: str):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     markdown_file = open(from_path)
     markdown = markdown_file.read()
@@ -21,8 +21,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     title = extract_title(markdown)
     html = markdown_to_html_node(markdown).to_html()
 
-    generated_page = template.replace("{{ Title }}", title).replace(
-        "{{ Content }}", html
+    generated_page = (
+        template.replace("{{ Title }}", title)
+        .replace("{{ Content }}", html)
+        .replace('href="/', f'href="{base_path}')
+        .replace('src="/', f'src="{base_path}')
     )
 
     dest_dir = os.path.dirname(dest_path)
@@ -37,7 +40,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
 
 def generate_pages_recursive(
-    source_path: str, template_path: str, destination_path: str
+    source_path: str, template_path: str, destination_path: str, base_path: str = "/"
 ):
     children = os.listdir(source_path)
 
@@ -45,7 +48,9 @@ def generate_pages_recursive(
         new_source_path = f"{source_path}/{child}"
         new_destination_path = f"{destination_path}/{child.replace(".md", ".html")}"
         if os.path.isfile(new_source_path):
-            generate_page(new_source_path, template_path, new_destination_path)
+            generate_page(
+                new_source_path, template_path, new_destination_path, base_path
+            )
         elif os.path.isdir(new_source_path):
             generate_pages_recursive(
                 new_source_path, template_path, new_destination_path

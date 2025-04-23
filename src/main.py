@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 
 from generate_pages import generate_pages_recursive
 from htmlnode import HTMLNode
@@ -27,8 +28,12 @@ def copy_dir(source_path: str, destination_path: str):
 
 
 def main():
-    copy_dir("./static", "./public")
-    generate_pages_recursive("./content", "./template.html", "./public")
+    base_path = sys.argv[1]
+    destination_path = "./docs"
+    copy_dir("./static", destination_path)
+    generate_pages_recursive(
+        "./content", "./template.html", destination_path, base_path
+    )
 
 
 main()
