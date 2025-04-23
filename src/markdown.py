@@ -66,7 +66,6 @@ def split_node_link(old_node: TextNode) -> list[TextNode]:
         extracted_links = extract_markdown_links(part)
         if len(extracted_links) > 0:
             (text, url) = extracted_links[0]
-            print(f"text: {text} url: {url}")
             new_nodes.append(TextNode(text, TextType.LINK, url))
         elif len(part) > 0:
             new_nodes.append(TextNode(part, old_node.text_type, old_node.url))
